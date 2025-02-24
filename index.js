@@ -12,10 +12,12 @@ const resultDecoded = document.getElementById('resultDecoded');
 var btnStartCamera = document.getElementById('startCamera');
 var btnCapture = document.getElementById('capture');
 
+const camara_activa = document.getElementById('camara_activa');
+camara_activa.value = false
+const exist_photo = document.getElementById('exist_photo');
+exist_photo.value = false
 
 var cameraPhoto = new JslibHtml5CameraPhoto.default(video);
-
-
 
 function startCamera() {
     var cameraPhoto = new JslibHtml5CameraPhoto.default(video);
@@ -38,9 +40,15 @@ function stopCamera() {
     }
 }
 
+let intervalPhoto = setInterval(takePhoto, 1000)
+
 function takePhoto() {
     console.log("takePhoto")
-
+    if (camara_activa.value == 'false' || exist_photo == 'true'){
+        console.log('Camara inactiva o ya se tomo foto');
+        return
+    }
+    exist_photo.value = true
     var config = {
         sizeFactor: 1,
         imageType: IMAGE_TYPES.PNG,
@@ -131,6 +139,7 @@ function cutImage() {
             decodeFun()
 
         } catch (e) {
+            exist_photo.value = false
             console.log('Error al recortar imagen:' + e);
             //resultDecoded.innerHTML = "Esperando recorte" + e.message
         }
@@ -142,22 +151,6 @@ function decodeFun() {
     const codeReader = new ZXing.BrowserPDF417Reader()
     resultDecoded.innerHTML = "Esperando decode crea imagen"
     console.log('Entro a decodificar valoressss');
-    // const img = document.createElement('img');
-    // img.src = b64
-    // resultDecoded.innerHTML = "Esperando decode crea imagen"
-    /*setTimeout(async () => {
-        resultDecoded.innerHTML = "Esperando decode imagen cargada"
-        try {
-            console.log(`Started decode for image from ${photoResult.src}`)
-            let result = await codeReader.decodeFromImageElement(photoResult)
-            let dataParser = parserResult(result.text)
-            let jsonString = JSON.stringify(dataParser)
-            resultDecoded.textContent = jsonString            
-        } catch (ee) {
-            console.log("Errro decoded", ee)
-            resultDecoded.textContent = 'Errro decoded' + ee;
-        }
-    }, 50);*/
     photoAuxResult.onload = async () => {
         //resultDecoded.innerHTML = "Esperando decode imagen cargada"
         try {
@@ -165,8 +158,14 @@ function decodeFun() {
             let result = await codeReader.decodeFromImageElement(photoAuxResult)
             let dataParser = parserResult(result.text)
             let jsonString = JSON.stringify(dataParser)
-            resultDecoded.textContent = jsonString            
+            if (jsonString != null && jsonString != '') {
+                resultDecoded.textContent = jsonString
+                clearInterval(intervalPhoto)
+                stopCamera()
+            }
+                     
         } catch (ee) {
+            exist_photo.value = false
             console.log("Errro decoded", ee)
             resultDecoded.textContent = 'Errro decoded' + ee;
         }
