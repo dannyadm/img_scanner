@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover" />
+    <title>BeMatch</title>
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <link rel="stylesheet" href="./assets/css/style_danny.css">
+</head>
+
+<body class="bg-white">
+    <div id="appCapsule" style="padding: 10px;">
+        <!-- carousel slider -->
+        <div class="row">
+            <div class="card">
+                <div class="card-body d-flex justify-content-center align-items-center">
+                    <div class="video-container" id="auxContainer">
+                        <video id="video" autoplay></video>
+                        <div id="fullscreenControls">
+                            <button class="btn btn-primary" id="startCamera">Iniciar cámara</button>
+                            <button class="btn btn-primary" id="capture">Tomar Foto</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-md-6 mt-2">
+                <img id="photoIni" alt="Tu foto aparecerá aquí" width="100%">
+                <input id="camara_activa" type="hidden" value="false"/>
+            </div>
+            <!-- <div class="col-12 col-md-6">
+                <img id="photoProcess" alt="Tu foto aparecerá aquí" width="100%">
+            </div> -->
+            <div class="col-12 col-md-6 mt-2">
+                <img id="photoResult" alt="Tu foto aparecerá aquí" width="100%">
+            </div>
+            <div class="col-12 col-md-6 mt-2">
+                <div class="card">
+                    <div class="card-body d-flex justify-content-center align-items-center">
+                        <div id="resultDecoded" class="text-break">
+                            Esperando resultados....
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    
+    
+    <script src="./assets/lib/bootstrap.min.js"></script>
+    <script src="./assets/lib/zxing.js"></script>
+    <script src="https://docs.opencv.org/4.7.0/opencv.js" async></script>
+    <script src="https://cdn.jsdelivr.net/gh/ColonelParrot/jscanify@master/src/jscanify.min.js"></script>
+    <script src="./assets/lib/jslib-html5-camera-photo.min.js"></script>
+    <!-- Base Js File -->
+    <script src="decode.js"></script>
+    <script src="recorte.js"></script>
+    <script src="index.js"></script>
+</body>
+
+</html>
