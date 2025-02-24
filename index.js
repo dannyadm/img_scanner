@@ -10,7 +10,6 @@ const resultDecoded = document.getElementById('resultDecoded');
 
 var btnStartCamera = document.getElementById('startCamera');
 var btnCapture = document.getElementById('capture');
-var btnCutImg = document.getElementById('cutImg');
 
 const codeReader = new ZXing.BrowserPDF417Reader()
 var cameraPhoto = new JslibHtml5CameraPhoto.default(video);
@@ -187,5 +186,4 @@ function cleanString(text) {
 document.addEventListener('DOMContentLoaded', function () {
     btnStartCamera.addEventListener('click', startCamera, false)
     btnCapture.addEventListener('click', takePhoto, false)
-    btnCutImg.addEventListener('click', cutImage, false)
 });
