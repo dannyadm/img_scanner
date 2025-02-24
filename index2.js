@@ -12,10 +12,12 @@ const resultDecoded = document.getElementById('resultDecoded');
 var btnStartCamera = document.getElementById('startCamera');
 var btnCapture = document.getElementById('capture');
 
-const camara_activa = document.getElementById('camara_activa');
-camara_activa.value = false
-const exist_photo = document.getElementById('exist_photo');
-exist_photo.value = false
+const sizePhoto = document.getElementById('sizePhoto');
+
+// const camara_activa = document.getElementById('camara_activa');
+// camara_activa.value = false
+// const exist_photo = document.getElementById('exist_photo');
+// exist_photo.value = false
 
 let auxDecoded = false
 
@@ -25,7 +27,7 @@ function startCamera() {
     var cam_type = JslibHtml5CameraPhoto.FACING_MODES["ENVIRONMENT"]
     try {
         cameraPhoto.startCameraMaxResolution(cam_type)
-        camara_activa.value = true
+        //camara_activa.value = true
         console.log('Si entro a la camara');
     } catch (error) {
         alert("Error al activar la camara:" + error)
@@ -43,18 +45,18 @@ function stopCamera() {
     }
 }
 
-setInterval(takePhoto, 300)
+//setInterval(takePhoto, 300)
 
 function takePhoto() {
     console.log("takePhoto")
-    if (camara_activa.value == 'false' || exist_photo == 'true'){
-        console.log('Camara inactiva o ya se tomo foto');
-        return
-    }
-    if (auxDecoded) {
-        return
-    }
-    exist_photo.value = true
+    // if (camara_activa.value == 'false' || exist_photo == 'true'){
+    //     console.log('Camara inactiva o ya se tomo foto');
+    //     return
+    // }
+    // if (auxDecoded) {
+    //     return
+    // }
+    //exist_photo.value = true
     var config = {
         sizeFactor: 1,
         imageType: IMAGE_TYPES.PNG,
@@ -66,6 +68,7 @@ function takePhoto() {
     photoIni.onload = () => {
         let imgWidth = photoIni.naturalWidth;
         let imgHeight = photoIni.naturalHeight;
+        sizePhoto.textContent = imgWidth + "x" + imgHeight
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         let isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -98,9 +101,9 @@ function takePhoto() {
 
 //function cutImage(b64) {
 function cutImage() {
-    if (auxDecoded) {
-        return
-    }
+    // if (auxDecoded) {
+    //     return
+    // }
     const scanner = new jscanify();
     photoProcess.onload = () => {
         try {
@@ -151,9 +154,9 @@ function cutImage() {
 
 // function decodeFun(b64) {
 function decodeFun() {
-    if (auxDecoded) {
-        return
-    }
+    // if (auxDecoded) {
+    //     return
+    // }
     const codeReader = new ZXing.BrowserPDF417Reader()
     resultDecoded.innerHTML = "Esperando decode crea imagen"
     console.log('Entro a decodificar valoressss');
@@ -162,9 +165,9 @@ function decodeFun() {
         try {
             console.log(`Started decode for image from ${photoAuxResult.src}`)
             let result = await codeReader.decodeFromImageElement(photoAuxResult)
-            auxDecoded = true
-            camara_activa.value = false
-            stopCamera()
+            // auxDecoded = true
+            // camara_activa.value = false
+            // stopCamera()
             let dataParser = parserResult(result.text)
             let jsonString = JSON.stringify(dataParser)
             resultDecoded.textContent = jsonString
