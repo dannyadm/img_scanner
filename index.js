@@ -6,6 +6,7 @@ const photoIni = document.getElementById('photoIni');
 const photoProcess = document.getElementById('photoProcess');
 const photoBorder = document.getElementById('photoBorder');
 const photoResult = document.getElementById('photoResult');
+const photoAuxResult = document.getElementById('photoResultAux');
 const resultDecoded = document.getElementById('resultDecoded');
 
 var btnStartCamera = document.getElementById('startCamera');
@@ -122,7 +123,9 @@ function cutImage() {
                 0, 0, extractedCanvas.width, extractedCanvas.height
             );
 
-            photoResult.src = extractedCanvas.toDataURL('image/png');
+            let imgData = extractedCanvas.toDataURL('image/png');
+            photoResult.src = imgData
+            photoAuxResult.src = imgData
             //decodeFun(extractedCanvas.toDataURL('image/png'))
             decodeFun()
 
@@ -140,7 +143,7 @@ function decodeFun() {
     // const img = document.createElement('img');
     // img.src = b64
     // resultDecoded.innerHTML = "Esperando decode crea imagen"
-    setTimeout(async () => {
+    /*setTimeout(async () => {
         resultDecoded.innerHTML = "Esperando decode imagen cargada"
         try {
             console.log(`Started decode for image from ${photoResult.src}`)
@@ -152,12 +155,12 @@ function decodeFun() {
             console.log("Errro decoded", ee)
             resultDecoded.textContent = 'Errro decoded' + ee;
         }
-    }, 50);
-    /*photoResult.onload = async () => {
+    }, 50);*/
+    photoAuxResult.onload = async () => {
         resultDecoded.innerHTML = "Esperando decode imagen cargada"
         try {
-            console.log(`Started decode for image from ${photoResult.src}`)
-            let result = await codeReader.decodeFromImageElement(photoResult)
+            console.log(`Started decode for image from ${photoAuxResult.src}`)
+            let result = await codeReader.decodeFromImageElement(photoAuxResult)
             let dataParser = parserResult(result.text)
             let jsonString = JSON.stringify(dataParser)
             resultDecoded.textContent = jsonString            
@@ -165,7 +168,7 @@ function decodeFun() {
             console.log("Errro decoded", ee)
             resultDecoded.textContent = 'Errro decoded' + ee;
         }
-    }*/
+    }
 };
 function parserResult(text) {
     console.log('Llego a crear objetooooo');
