@@ -12,9 +12,12 @@ const resultDecoded = document.getElementById('resultDecoded');
 var btnStartCamera = document.getElementById('startCamera');
 var btnCapture = document.getElementById('capture');
 
-//const camara_activa = document.getElementById('camara_activa');
-let camara_activa = false
-let exist_photo = false
+const camara_activa = document.getElementById('camara_activa');
+camara_activa.value = false
+const exist_photo = document.getElementById('exist_photo');
+exist_photo.value = false
+
+let auxDecoded = false
 
 var cameraPhoto = new JslibHtml5CameraPhoto.default(video);
 
@@ -23,7 +26,7 @@ function startCamera() {
     var cam_type = JslibHtml5CameraPhoto.FACING_MODES["ENVIRONMENT"]
     try {
         cameraPhoto.startCameraMaxResolution(cam_type)
-        camara_activa = true
+        camara_activa.value = true
         console.log('Si entro a la camara');
     } catch (error) {
         alert("Error al activar la camara:" + error)
@@ -41,16 +44,18 @@ function stopCamera() {
     }
 }
 
-setInterval(takePhoto, 3000)
+setInterval(takePhoto, 1000)
 
 function takePhoto() {
     console.log("takePhoto")
-    if (camara_activa == false || exist_photo == true){
+    if (camara_activa.value == 'false' || exist_photo == 'true'){
         console.log('Camara inactiva o ya se tomo foto');
         return
     }
-    console.log('Algooooooo pasoooooo');
-    exist_photo = true
+    if (auxDecoded) {
+        return
+    }
+    exist_photo.value = true
     var config = {
         sizeFactor: 1,
         imageType: IMAGE_TYPES.PNG,
@@ -141,7 +146,7 @@ function cutImage() {
             decodeFun()
 
         } catch (e) {
-            exist_photo = false
+            exist_photo.value = false
             console.log('Error al recortar imagen:' + e);
             //resultDecoded.innerHTML = "Esperando recorte" + e.message
         }
@@ -158,7 +163,8 @@ function decodeFun() {
         try {
             console.log(`Started decode for image from ${photoAuxResult.src}`)
             let result = await codeReader.decodeFromImageElement(photoAuxResult)
-            camara_activa = false
+            auxDecoded = true
+            camara_activa.value = false
             stopCamera()
             let dataParser = parserResult(result.text)
             let jsonString = JSON.stringify(dataParser)
@@ -166,7 +172,7 @@ function decodeFun() {
             //clearInterval(intervalPhoto)
                      
         } catch (ee) {
-            exist_photo = false
+            exist_photo.value = false
             console.log("Errro decoded", ee)
             resultDecoded.textContent = 'Errro decoded' + ee;
         }
