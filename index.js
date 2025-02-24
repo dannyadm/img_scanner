@@ -11,7 +11,6 @@ const resultDecoded = document.getElementById('resultDecoded');
 var btnStartCamera = document.getElementById('startCamera');
 var btnCapture = document.getElementById('capture');
 var btnCutImg = document.getElementById('cutImg');
-var btndecoded = document.getElementById('decoded');
 
 const codeReader = new ZXing.BrowserPDF417Reader()
 var cameraPhoto = new JslibHtml5CameraPhoto.default(video);
@@ -77,9 +76,9 @@ function takePhoto() {
             ctx.drawImage(photoIni, 0, 0, imgWidth, imgHeight);
         }
 
-        const imagenData = canvas.toDataURL('image/png');
-        photoProcess.src = imagenData;
+        photoProcess.src = canvas.toDataURL('image/png');
         //cutImage(canvas.toDataURL('image/png'))
+        cutImage()
     }
 }
 
@@ -88,51 +87,51 @@ function cutImage() {
     //const img = document.createElement('img');
     //img.src = b64
     //resultDecoded.innerHTML = "Esperando recorte"
-    //photoProcess.onload = () => {
-    try {
-        //const scanner = new jscanify();
-        const highlightedCanvas = scanner.highlightPaper(photoProcess);
-        photoBorder.src = highlightedCanvas.toDataURL('image/png');
+    photoProcess.onload = () => {
+        try {
+            //const scanner = new jscanify();
+            const highlightedCanvas = scanner.highlightPaper(photoProcess);
+            photoBorder.src = highlightedCanvas.toDataURL('image/png');
 
-        const contour = scanner.findPaperContour(cv.imread(photoProcess));
-        const cornerPoints = scanner.getCornerPoints(contour);
-        console.log('Coordenadas obtenidasss:', cornerPoints);
+            const contour = scanner.findPaperContour(cv.imread(photoProcess));
+            const cornerPoints = scanner.getCornerPoints(contour);
+            console.log('Coordenadas obtenidasss:', cornerPoints);
 
-        const imgWidth = photoProcess.naturalWidth;
-        const imgHeight = photoProcess.naturalHeight;
-        const displayWidth = photoProcess.width;
-        const displayHeight = photoProcess.height;
+            const imgWidth = photoProcess.naturalWidth;
+            const imgHeight = photoProcess.naturalHeight;
+            const displayWidth = photoProcess.width;
+            const displayHeight = photoProcess.height;
 
-        const scaleX = imgWidth / displayWidth;
-        const scaleY = imgHeight / displayHeight;
+            const scaleX = imgWidth / displayWidth;
+            const scaleY = imgHeight / displayHeight;
 
-        //let newSisze = getSizeNewImage(cornerPoints);
-        //console.log('Nuevas dimensioness', newSisze);
+            //let newSisze = getSizeNewImage(cornerPoints);
+            //console.log('Nuevas dimensioness', newSisze);
 
-        const adjustedX = cornerPoints.topLeftCorner.x * scaleX;
-        const adjustedY = cornerPoints.topLeftCorner.y * scaleY;
-        const adjustedWidth = (cornerPoints.topRightCorner.x - cornerPoints.topLeftCorner.x) * scaleX;
-        const adjustedHeight = (cornerPoints.bottomLeftCorner.y - cornerPoints.topLeftCorner.y) * scaleY;
+            const adjustedX = cornerPoints.topLeftCorner.x * scaleX;
+            const adjustedY = cornerPoints.topLeftCorner.y * scaleY;
+            const adjustedWidth = (cornerPoints.topRightCorner.x - cornerPoints.topLeftCorner.x) * scaleX;
+            const adjustedHeight = (cornerPoints.bottomLeftCorner.y - cornerPoints.topLeftCorner.y) * scaleY;
 
-        const extractedCanvas = document.createElement('canvas');
-        extractedCanvas.width = adjustedWidth;
-        extractedCanvas.height = adjustedHeight;
-        const extractedCtx = extractedCanvas.getContext('2d');
-        extractedCtx.drawImage(
-            photoProcess,  // Imagen original
-            adjustedX, adjustedY, adjustedWidth, adjustedHeight,
-            0, 0, extractedCanvas.width, extractedCanvas.height
-        );
+            const extractedCanvas = document.createElement('canvas');
+            extractedCanvas.width = adjustedWidth;
+            extractedCanvas.height = adjustedHeight;
+            const extractedCtx = extractedCanvas.getContext('2d');
+            extractedCtx.drawImage(
+                photoProcess,  // Imagen original
+                adjustedX, adjustedY, adjustedWidth, adjustedHeight,
+                0, 0, extractedCanvas.width, extractedCanvas.height
+            );
 
-        photoResult.src = extractedCanvas.toDataURL('image/png');
-        //decodeFun(extractedCanvas.toDataURL('image/png'))
-        decodeFun()
+            photoResult.src = extractedCanvas.toDataURL('image/png');
+            //decodeFun(extractedCanvas.toDataURL('image/png'))
+            decodeFun()
 
-    } catch (e) {
-        console.log('Error al recortar imagen:' + e);
-        //resultDecoded.innerHTML = "Esperando recorte" + e.message
+        } catch (e) {
+            console.log('Error al recortar imagen:' + e);
+            //resultDecoded.innerHTML = "Esperando recorte" + e.message
+        }
     }
-    //}
 }
 
 // function decodeFun(b64) {
@@ -189,5 +188,4 @@ document.addEventListener('DOMContentLoaded', function () {
     btnStartCamera.addEventListener('click', startCamera, false)
     btnCapture.addEventListener('click', takePhoto, false)
     btnCutImg.addEventListener('click', cutImage, false)
-    btndecoded.addEventListener('click', decodeFun, false)
 });
