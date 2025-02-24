@@ -126,6 +126,7 @@ function cutImage() {
 
         photoResult.src = extractedCanvas.toDataURL('image/png');
         //decodeFun(extractedCanvas.toDataURL('image/png'))
+        decodeFun()
 
     } catch (e) {
         console.log('Error al recortar imagen:' + e);
@@ -141,26 +142,25 @@ function decodeFun() {
     // const img = document.createElement('img');
     // img.src = b64
     // resultDecoded.innerHTML = "Esperando decode crea imagen"
-    //img.onload = () => {
-    resultDecoded.innerHTML = "Esperando decode imagen cargada"
-    try {
-        codeReader.decodeFromImage(photoResult)
-            .then(result => {
-                let dataParser = parserResult(result.text)
-                let jsonString = JSON.stringify(dataParser)
-                resultDecoded.textContent = jsonString
-                //camara_activa.value = false
-            })
-            .catch(err => {
-                resultDecoded.textContent = 'Error al decodificar:' + err;
-            });
-        console.log(`Started decode for image from ${photoResult.src}`)
-    } catch (ee) {
-        console.log("Errro mainss", ee)
-        resultDecoded.textContent = 'Errro mainss' + ee;
+    photoResult.onload = () => {
+        resultDecoded.innerHTML = "Esperando decode imagen cargada"
+        try {
+            codeReader.decodeFromImage(photoResult)
+                .then(result => {
+                    let dataParser = parserResult(result.text)
+                    let jsonString = JSON.stringify(dataParser)
+                    resultDecoded.textContent = jsonString
+                    //camara_activa.value = false
+                })
+                .catch(err => {
+                    resultDecoded.textContent = 'Error al decodificar:' + err;
+                });
+            console.log(`Started decode for image from ${photoResult.src}`)
+        } catch (ee) {
+            console.log("Errro mainss", ee)
+            resultDecoded.textContent = 'Errro mainss' + ee;
+        }
     }
-    //}
-    //console.log(`Started decode for image from ${photoResult.src}`)
 };
 function parserResult(text) {
     console.log('Llego a crear objetooooo');
