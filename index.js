@@ -140,30 +140,32 @@ function decodeFun() {
     // const img = document.createElement('img');
     // img.src = b64
     // resultDecoded.innerHTML = "Esperando decode crea imagen"
-    photoResult.onload = async () => {
+    setTimeout(async () => {
         resultDecoded.innerHTML = "Esperando decode imagen cargada"
         try {
             console.log(`Started decode for image from ${photoResult.src}`)
             let result = await codeReader.decodeFromImageElement(photoResult)
             let dataParser = parserResult(result.text)
             let jsonString = JSON.stringify(dataParser)
-            resultDecoded.textContent = jsonString
-            /*codeReader.decodeFromImage(photoResult)
-                .then(result => {
-                    let dataParser = parserResult(result.text)
-                    let jsonString = JSON.stringify(dataParser)
-                    resultDecoded.textContent = jsonString
-                    //camara_activa.value = false
-                })
-                .catch(err => {
-                    resultDecoded.textContent = 'Error al decodificar:' + err;
-                });*/
-            
+            resultDecoded.textContent = jsonString            
         } catch (ee) {
             console.log("Errro decoded", ee)
             resultDecoded.textContent = 'Errro decoded' + ee;
         }
-    }
+    }, 50);
+    /*photoResult.onload = async () => {
+        resultDecoded.innerHTML = "Esperando decode imagen cargada"
+        try {
+            console.log(`Started decode for image from ${photoResult.src}`)
+            let result = await codeReader.decodeFromImageElement(photoResult)
+            let dataParser = parserResult(result.text)
+            let jsonString = JSON.stringify(dataParser)
+            resultDecoded.textContent = jsonString            
+        } catch (ee) {
+            console.log("Errro decoded", ee)
+            resultDecoded.textContent = 'Errro decoded' + ee;
+        }
+    }*/
 };
 function parserResult(text) {
     console.log('Llego a crear objetooooo');
