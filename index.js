@@ -140,10 +140,15 @@ function decodeFun() {
     // const img = document.createElement('img');
     // img.src = b64
     // resultDecoded.innerHTML = "Esperando decode crea imagen"
-    photoResult.onload = () => {
+    photoResult.onload = async () => {
         resultDecoded.innerHTML = "Esperando decode imagen cargada"
         try {
-            codeReader.decodeFromImage(photoResult)
+            console.log(`Started decode for image from ${photoResult.src}`)
+            let result = await codeReader.decodeFromImageElement(photoResult)
+            let dataParser = parserResult(result.text)
+            let jsonString = JSON.stringify(dataParser)
+            resultDecoded.textContent = jsonString
+            /*codeReader.decodeFromImage(photoResult)
                 .then(result => {
                     let dataParser = parserResult(result.text)
                     let jsonString = JSON.stringify(dataParser)
@@ -152,11 +157,11 @@ function decodeFun() {
                 })
                 .catch(err => {
                     resultDecoded.textContent = 'Error al decodificar:' + err;
-                });
-            console.log(`Started decode for image from ${photoResult.src}`)
+                });*/
+            
         } catch (ee) {
-            console.log("Errro mainss", ee)
-            resultDecoded.textContent = 'Errro mainss' + ee;
+            console.log("Errro decoded", ee)
+            resultDecoded.textContent = 'Errro decoded' + ee;
         }
     }
 };
