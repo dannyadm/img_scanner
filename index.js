@@ -99,6 +99,9 @@ function takePhoto() {
 
 //function cutImage(b64) {
 function cutImage() {
+    if (auxDecoded) {
+        return
+    }
     const scanner = new jscanify();
     //const img = document.createElement('img');
     //img.src = b64
@@ -155,6 +158,9 @@ function cutImage() {
 
 // function decodeFun(b64) {
 function decodeFun() {
+    if (auxDecoded) {
+        return
+    }
     const codeReader = new ZXing.BrowserPDF417Reader()
     resultDecoded.innerHTML = "Esperando decode crea imagen"
     console.log('Entro a decodificar valoressss');
