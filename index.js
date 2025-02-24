@@ -12,6 +12,7 @@ var btnCapture = document.getElementById('capture');
 
 const codeReader = new ZXing.BrowserPDF417Reader()
 var cameraPhoto = new JslibHtml5CameraPhoto.default(video);
+const scanner = new jscanify();
 
 
 function startCamera() {
@@ -85,9 +86,9 @@ function cutImage(b64) {
     //resultDecoded.innerHTML = "Esperando recorte"
     img.onload = () => {
         try {
-            const scanner = new jscanify();
-            //const highlightedCanvas = scanner.highlightPaper(img);
-            //photoProcess.src = highlightedCanvas.toDataURL('image/png');
+            //const scanner = new jscanify();
+            const highlightedCanvas = scanner.highlightPaper(img);
+            photoProcess.src = highlightedCanvas.toDataURL('image/png');
 
             const contour = scanner.findPaperContour(cv.imread(img));
             const cornerPoints = scanner.getCornerPoints(contour);
