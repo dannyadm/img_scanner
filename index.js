@@ -157,7 +157,7 @@ function decodeFun() {
         }
     }, 50);*/
     photoAuxResult.onload = async () => {
-        resultDecoded.innerHTML = "Esperando decode imagen cargada"
+        //resultDecoded.innerHTML = "Esperando decode imagen cargada"
         try {
             console.log(`Started decode for image from ${photoAuxResult.src}`)
             let result = await codeReader.decodeFromImageElement(photoAuxResult)
