@@ -41,7 +41,7 @@ function stopCamera() {
     }
 }
 
-setInterval(takePhoto, 1000)
+setInterval(takePhoto, 3000)
 
 function takePhoto() {
     console.log("takePhoto")
@@ -49,6 +49,7 @@ function takePhoto() {
         console.log('Camara inactiva o ya se tomo foto');
         return
     }
+    console.log('Algooooooo pasoooooo');
     exist_photo = true
     var config = {
         sizeFactor: 1,
