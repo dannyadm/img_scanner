@@ -20,7 +20,7 @@ exist_photo.value = false
 var cameraPhoto = new JslibHtml5CameraPhoto.default(video);
 
 function startCamera() {
-    var cameraPhoto = new JslibHtml5CameraPhoto.default(video);
+    //var cameraPhoto = new JslibHtml5CameraPhoto.default(video);
     var cam_type = JslibHtml5CameraPhoto.FACING_MODES["ENVIRONMENT"]
     try {
         cameraPhoto.startCameraMaxResolution(cam_type)
@@ -34,9 +34,12 @@ function startCamera() {
 function stopCamera() {
     try {
         cameraPhoto.stopCamera()
+        camara_activa.value = false
         console.log('Camera stoped!');
+        alert('Camera stoped!')
     } catch (error) {
         console.log('No camera to stop!:', error);
+        alert('No camera to stop!:' + error)
     }
 }
 
@@ -156,11 +159,11 @@ function decodeFun() {
         try {
             console.log(`Started decode for image from ${photoAuxResult.src}`)
             let result = await codeReader.decodeFromImageElement(photoAuxResult)
-            clearInterval(intervalPhoto)
+            stopCamera()
             let dataParser = parserResult(result.text)
             let jsonString = JSON.stringify(dataParser)
-            stopCamera()
             resultDecoded.textContent = jsonString
+            clearInterval(intervalPhoto)
                      
         } catch (ee) {
             exist_photo.value = false
