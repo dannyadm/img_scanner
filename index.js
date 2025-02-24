@@ -12,9 +12,9 @@ const resultDecoded = document.getElementById('resultDecoded');
 var btnStartCamera = document.getElementById('startCamera');
 var btnCapture = document.getElementById('capture');
 
-const codeReader = new ZXing.BrowserPDF417Reader()
+
 var cameraPhoto = new JslibHtml5CameraPhoto.default(video);
-const scanner = new jscanify();
+
 
 
 function startCamera() {
@@ -84,6 +84,7 @@ function takePhoto() {
 
 //function cutImage(b64) {
 function cutImage() {
+    const scanner = new jscanify();
     //const img = document.createElement('img');
     //img.src = b64
     //resultDecoded.innerHTML = "Esperando recorte"
@@ -138,6 +139,7 @@ function cutImage() {
 
 // function decodeFun(b64) {
 function decodeFun() {
+    const codeReader = new ZXing.BrowserPDF417Reader()
     resultDecoded.innerHTML = "Esperando decode crea imagen"
     console.log('Entro a decodificar valoressss');
     // const img = document.createElement('img');
