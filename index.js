@@ -156,13 +156,11 @@ function decodeFun() {
         try {
             console.log(`Started decode for image from ${photoAuxResult.src}`)
             let result = await codeReader.decodeFromImageElement(photoAuxResult)
+            clearInterval(intervalPhoto)
             let dataParser = parserResult(result.text)
             let jsonString = JSON.stringify(dataParser)
-            if (jsonString != null && jsonString != '') {
-                resultDecoded.textContent = jsonString
-                clearInterval(intervalPhoto)
-                stopCamera()
-            }
+            stopCamera()
+            resultDecoded.textContent = jsonString
                      
         } catch (ee) {
             exist_photo.value = false
