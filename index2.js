@@ -65,8 +65,8 @@ function takePhoto() {
     console.log('Tipo de image de variable', typeof dataUri);
     photoIni.src = dataUri;
     photoIni.onload = () => {
-        let imgWidth = photoIni.naturalWidth;
-        let imgHeight = photoIni.naturalHeight;
+        let imgWidth = photoIni.naturalWidth * 0.6;
+        let imgHeight = photoIni.naturalHeight * 0.6;
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         let isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
