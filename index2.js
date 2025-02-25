@@ -47,30 +47,33 @@ function stopCamera() {
 //setInterval(takePhoto, 300)
 
 function takePhoto() {
-    console.log("takePhotoAndProcess")
+    console.log("takePhoto")
+    // if (camara_activa.value == 'false' || exist_photo == 'true'){
+    //     console.log('Camara inactiva o ya se tomo foto');
+    //     return
+    // }
+    // if (auxDecoded) {
+    //     return
+    // }
+    exist_photo.value = true
     var config = {
         sizeFactor: 1,
         imageType: IMAGE_TYPES.PNG,
         imageCompression: 1
     };
     var dataUri = cameraPhoto.getDataUri(config);
-    console.log('Tipo de imagen de variable', typeof dataUri);
-    
+    console.log('Tipo de image de variable', typeof dataUri);
     photoIni.src = dataUri;
     photoIni.onload = () => {
         let imgWidth = photoIni.naturalWidth;
         let imgHeight = photoIni.naturalHeight;
-        sizePhoto.textContent = imgWidth + "x" + imgHeight;
-        
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         let isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-        // Ajustes para móvil y procesamiento de la imagen
         if (isMobile) {
-            console.log('Si es un móvil');
-            canvas.width = imgHeight;
-            canvas.height = imgWidth;
+            console.log('Si es un mobileeeee');
+            canvas.width = photoIni.naturalHeight;
+            canvas.height = photoIni.naturalWidth;
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = "high";
             ctx.save();
@@ -79,47 +82,72 @@ function takePhoto() {
             ctx.filter = 'grayscale(1)';
             ctx.drawImage(photoIni, 0, 0, imgWidth, imgHeight);
         } else {
-            console.log('No es un móvil');
-            canvas.width = imgWidth;
-            canvas.height = imgHeight;
+            console.log('NO es un mobileeeee');
+            canvas.width = photoIni.naturalWidth;
+            canvas.height = photoIni.naturalHeight;
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = "high";
             ctx.filter = 'grayscale(1)';
             ctx.drawImage(photoIni, 0, 0, imgWidth, imgHeight);
         }
 
-        // Procesar la imagen recortada directamente desde el canvas
-        const scanner = new jscanify();
-        const highlightedCanvas = scanner.highlightPaper(canvas); // Usamos canvas aquí, no dataUri
-        photoBorder.src = highlightedCanvas.toDataURL('image/png');
+        photoProcess.src = canvas.toDataURL('image/png');
+        //cutImage(canvas.toDataURL('image/png'))
+        cutImage()
+    }
+}
 
-        const contour = scanner.findPaperContour(cv.imread(highlightedCanvas));
-        const cornerPoints = scanner.getCornerPoints(contour);
-        console.log('Coordenadas obtenidas:', cornerPoints);
+function cutImage() {
+    // if (auxDecoded) {
+    //     return
+    // }
+    const scanner = new jscanify();
+    photoProcess.onload = () => {
+        try {
+            //const scanner = new jscanify();
+            const highlightedCanvas = scanner.highlightPaper(photoProcess);
+            photoBorder.src = highlightedCanvas.toDataURL('image/png');
 
-        const scaleX = imgWidth / canvas.width;
-        const scaleY = imgHeight / canvas.height;
+            const contour = scanner.findPaperContour(cv.imread(photoProcess));
+            const cornerPoints = scanner.getCornerPoints(contour);
+            sizePhoto.textContent = JSON.stringify(cornerPoints)
+            console.log('Coordenadas obtenidasss:', cornerPoints);
 
-        const adjustedX = cornerPoints.topLeftCorner.x * scaleX;
-        const adjustedY = cornerPoints.topLeftCorner.y * scaleY;
-        const adjustedWidth = (cornerPoints.topRightCorner.x - cornerPoints.topLeftCorner.x) * scaleX;
-        const adjustedHeight = (cornerPoints.bottomLeftCorner.y - cornerPoints.topLeftCorner.y) * scaleY;
+            const imgWidth = photoProcess.naturalWidth;
+            const imgHeight = photoProcess.naturalHeight;
+            const displayWidth = photoProcess.width;
+            const displayHeight = photoProcess.height;
 
-        // Crear canvas para recorte
-        const extractedCanvas = document.createElement('canvas');
-        extractedCanvas.width = adjustedWidth;
-        extractedCanvas.height = adjustedHeight;
-        const extractedCtx = extractedCanvas.getContext('2d');
-        extractedCtx.drawImage(
-            canvas, adjustedX, adjustedY, adjustedWidth, adjustedHeight,
-            0, 0, extractedCanvas.width, extractedCanvas.height
-        );
+            const scaleX = imgWidth / displayWidth;
+            const scaleY = imgHeight / displayHeight;
 
-        let imgData = extractedCanvas.toDataURL('image/png');
-        photoResult.src = imgData;
-        //photoAuxResult.src = imgData;
-        //decodeFun();
-    };
+            const adjustedX = cornerPoints.topLeftCorner.x * scaleX;
+            const adjustedY = cornerPoints.topLeftCorner.y * scaleY;
+            const adjustedWidth = (cornerPoints.topRightCorner.x - cornerPoints.topLeftCorner.x) * scaleX;
+            const adjustedHeight = (cornerPoints.bottomLeftCorner.y - cornerPoints.topLeftCorner.y) * scaleY;
+
+            const extractedCanvas = document.createElement('canvas');
+            extractedCanvas.width = adjustedWidth;
+            extractedCanvas.height = adjustedHeight;
+            const extractedCtx = extractedCanvas.getContext('2d');
+            extractedCtx.drawImage(
+                photoProcess,
+                adjustedX, adjustedY, adjustedWidth, adjustedHeight,
+                0, 0, extractedCanvas.width, extractedCanvas.height
+            );
+
+            let imgData = extractedCanvas.toDataURL('image/png');
+            photoResult.src = imgData
+            photoAuxResult.src = imgData
+            //decodeFun(extractedCanvas.toDataURL('image/png'))
+            decodeFun()
+
+        } catch (e) {
+            exist_photo.value = false
+            console.log('Error al recortar imagen:' + e);
+            //resultDecoded.innerHTML = "Esperando recorte" + e.message
+        }
+    }
 }
 
 function decodeFun() {
