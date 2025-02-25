@@ -167,7 +167,7 @@ function decodeFun() {
             // stopCamera()
             let dataParser = parserResult(result.text)
             let jsonString = JSON.stringify(dataParser)
-            resultDecoded.textContent = jsonString
+            //resultDecoded.textContent = jsonString
             //clearInterval(intervalPhoto)
                      
         } catch (ee) {
