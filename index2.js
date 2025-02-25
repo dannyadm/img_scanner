@@ -68,7 +68,7 @@ function takePhoto() {
     photoIni.onload = () => {
         let imgWidth = photoIni.naturalWidth;
         let imgHeight = photoIni.naturalHeight;
-        sizePhoto.textContent = imgWidth + "x" + imgHeight
+        
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         let isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -76,8 +76,15 @@ function takePhoto() {
         if (isMobile) {
             imageQuality = 0.8;
             console.log('Si es un mobileeeee');
-            canvas.width = photoIni.naturalHeight;
-            canvas.height = photoIni.naturalWidth;
+            if (photoIni.naturalHeight > 1920 && photoIni.naturalWidth > 1080) {
+                canvas.width = 1920;
+                canvas.height = 1080;
+            }else {
+                canvas.width = photoIni.naturalHeight;
+                canvas.height = photoIni.naturalWidth;
+            }
+            
+            sizePhoto.textContent = canvas.width + "x" + canvas.height
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = "high";
             ctx.save();
