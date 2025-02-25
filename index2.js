@@ -70,8 +70,8 @@ function takePhoto() {
             console.log('Si es un mobileeeee');
 
             if (photoIni.naturalWidth > 1080 || photoIni.naturalHeight > 1920) {
-                imgWidth = 1920
-                imgHeight = 1080
+                imgWidth = 1080
+                imgHeight = 1920
             }
 
             canvas.width = imgHeight;
