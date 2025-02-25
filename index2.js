@@ -80,8 +80,8 @@ function takePhoto() {
                 imgWidth = 1920
                 imgHeight = 1080    
             }
-            canvas.width = photoIni.naturalHeight;
-            canvas.height = photoIni.naturalWidth;
+            canvas.width = imgWidth;
+            canvas.height = imgHeight;
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = "high";
             ctx.save();
