@@ -76,8 +76,8 @@ function takePhoto() {
         if (isMobile) {
             imageQuality = 0.8;
             console.log('Si es un mobileeeee');
-            canvas.width = imgWidth;
-            canvas.height = imgHeight;
+            canvas.width = imgHeight;
+            canvas.height = imgWidth;
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = "high";
             ctx.save();
