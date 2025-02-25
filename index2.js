@@ -72,7 +72,9 @@ function takePhoto() {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         let isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        let imageQuality = 1; // Calidad de la imagen entre 0 y 1 (ajústalo según sea necesario)
         if (isMobile) {
+            imageQuality = 0.8;
             console.log('Si es un mobileeeee');
             canvas.width = photoIni.naturalHeight;
             canvas.height = photoIni.naturalWidth;
@@ -93,7 +95,8 @@ function takePhoto() {
             ctx.drawImage(photoIni, 0, 0, imgWidth, imgHeight);
         }
 
-        photoProcess.src = canvas.toDataURL('image/png');
+        //photoProcess.src = canvas.toDataURL('image/png');
+        photoProcess.src = canvas.toDataURL('image/webp', imageQuality);
         //cutImage(canvas.toDataURL('image/png'))
         cutImage()
     }
