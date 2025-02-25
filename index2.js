@@ -76,10 +76,6 @@ function takePhoto() {
         if (isMobile) {
             imageQuality = 0.8;
             console.log('Si es un mobileeeee');
-            if (photoIni.naturalHeight > 1920 && photoIni.naturalWidth > 1080) {
-                imgWidth = 1920
-                imgHeight = 1080    
-            }
             canvas.width = imgWidth;
             canvas.height = imgHeight;
             ctx.imageSmoothingEnabled = true;
