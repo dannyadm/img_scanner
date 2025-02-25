@@ -3,7 +3,6 @@ var IMAGE_TYPES = JslibHtml5CameraPhoto.IMAGE_TYPES;
 
 const video = document.getElementById('video');
 const photoIni = document.getElementById('photoIni');
-const photoProcess = document.getElementById('photoProcess');
 const photoBorder = document.getElementById('photoBorder');
 const photoResult = document.getElementById('photoResult');
 const photoAuxResult = document.getElementById('photoResultAux');
@@ -46,8 +45,9 @@ function stopCamera() {
 }
 
 //setInterval(takePhoto, 300)
+
 function takePhoto() {
-    console.log("takePhoto");
+    console.log("takePhotoAndProcess")
     var config = {
         sizeFactor: 1,
         imageType: IMAGE_TYPES.PNG,
@@ -55,93 +55,20 @@ function takePhoto() {
     };
     var dataUri = cameraPhoto.getDataUri(config);
     console.log('Tipo de imagen de variable', typeof dataUri);
-    photoIni.src = dataUri;
     
+    photoIni.src = dataUri;
     photoIni.onload = () => {
         let imgWidth = photoIni.naturalWidth;
         let imgHeight = photoIni.naturalHeight;
         sizePhoto.textContent = imgWidth + "x" + imgHeight;
-
-        // Dimensiones deseadas
-        const maxWidth = 1920;
-        const maxHeight = 1080;
-
-        // Crear canvas con las dimensiones fijas
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
         
-        // Establecer el canvas al tamaño 1920x1080
-        canvas.width = maxWidth;
-        canvas.height = maxHeight;
-
-        // Ajustar la imagen al tamaño del canvas sin distorsionarla (manteniendo la relación de aspecto)
-        const scaleX = maxWidth / imgWidth;
-        const scaleY = maxHeight / imgHeight;
-        const scale = Math.min(scaleX, scaleY); // Escala uniforme para que quepa en el canvas
-
-        const offsetX = (maxWidth - imgWidth * scale) / 2; // Centrar la imagen horizontalmente
-        const offsetY = (maxHeight - imgHeight * scale) / 2; // Centrar la imagen verticalmente
-
-        let isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        let imageQuality = 1;
-
-        if (isMobile) {
-            imageQuality = 0.8;
-            console.log('Si es un móvil');
-
-            // Si es móvil, rotamos la imagen 90 grados (por ejemplo)
-            canvas.width = maxHeight;
-            canvas.height = maxWidth;
-
-            ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = "high";
-            ctx.save();
-            ctx.translate(0, canvas.height);
-            ctx.rotate(Math.PI * 1.5); // Rotación de 90 grados
-            ctx.filter = 'grayscale(1)';
-            ctx.drawImage(photoIni, 0, 0, imgWidth, imgHeight, offsetX, offsetY, imgWidth * scale, imgHeight * scale);
-        } else {
-            console.log('NO es un móvil');
-            
-            ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = "high";
-            ctx.filter = 'grayscale(1)';
-            ctx.drawImage(photoIni, 0, 0, imgWidth, imgHeight, offsetX, offsetY, imgWidth * scale, imgHeight * scale);
-        }
-
-        // Convertir la imagen a formato WebP con la calidad ajustada
-        photoProcess.src = canvas.toDataURL('image/webp', imageQuality);
-        cutImage();
-    };
-}
-
-/*function takePhoto() {
-    console.log("takePhoto")
-    var config = {
-        sizeFactor: 1,
-        imageType: IMAGE_TYPES.PNG,
-        imageCompression: 1
-    };
-    var dataUri = cameraPhoto.getDataUri(config);
-    console.log('Tipo de image de variable', typeof dataUri);
-    photoIni.src = dataUri;
-    photoIni.onload = () => {
-        let imgWidth = photoIni.naturalWidth;
-        let imgHeight = photoIni.naturalHeight;
-        sizePhoto.textContent = imgWidth + "x" + imgHeight
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         let isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        let imageQuality = 1;
+
+        // Ajustes para móvil y procesamiento de la imagen
         if (isMobile) {
-            imageQuality = 0.8;
-            console.log('Si es un mobileeeee');
-
-            if (photoIni.naturalWidth > 1080 || photoIni.naturalHeight > 1920) {
-                imgWidth = 1080
-                imgHeight = 1920
-            }
-
+            console.log('Si es un móvil');
             canvas.width = imgHeight;
             canvas.height = imgWidth;
             ctx.imageSmoothingEnabled = true;
@@ -150,76 +77,51 @@ function takePhoto() {
             ctx.translate(0, canvas.height);
             ctx.rotate(Math.PI * 1.5);
             ctx.filter = 'grayscale(1)';
-            ctx.drawImage(photoIni, 0, 0, imgWidth, imgHeight, 0, 0, canvas.width, canvas.height);
+            ctx.drawImage(photoIni, 0, 0, imgWidth, imgHeight);
         } else {
-            console.log('NO es un mobileeeee');
-            canvas.width = photoIni.naturalWidth;
-            canvas.height = photoIni.naturalHeight;
+            console.log('No es un móvil');
+            canvas.width = imgWidth;
+            canvas.height = imgHeight;
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = "high";
             ctx.filter = 'grayscale(1)';
             ctx.drawImage(photoIni, 0, 0, imgWidth, imgHeight);
         }
 
-        photoProcess.src = canvas.toDataURL('image/webp', imageQuality);
-        cutImage()
-    }
-}*/
+        // Procesar la imagen recortada directamente desde el canvas
+        const scanner = new jscanify();
+        const highlightedCanvas = scanner.highlightPaper(canvas); // Usamos canvas aquí, no dataUri
+        photoBorder.src = highlightedCanvas.toDataURL('image/png');
 
-//function cutImage(b64) {
-function cutImage() {
-    // if (auxDecoded) {
-    //     return
-    // }
-    const scanner = new jscanify();
-    photoProcess.onload = () => {
-        try {
-            //const scanner = new jscanify();
-            const highlightedCanvas = scanner.highlightPaper(photoProcess);
-            photoBorder.src = highlightedCanvas.toDataURL('image/png');
+        const contour = scanner.findPaperContour(cv.imread(highlightedCanvas));
+        const cornerPoints = scanner.getCornerPoints(contour);
+        console.log('Coordenadas obtenidas:', cornerPoints);
 
-            const contour = scanner.findPaperContour(cv.imread(photoProcess));
-            const cornerPoints = scanner.getCornerPoints(contour);
-            console.log('Coordenadas obtenidasss:', cornerPoints);
+        const scaleX = imgWidth / canvas.width;
+        const scaleY = imgHeight / canvas.height;
 
-            const imgWidth = photoProcess.naturalWidth;
-            const imgHeight = photoProcess.naturalHeight;
-            const displayWidth = photoProcess.width;
-            const displayHeight = photoProcess.height;
+        const adjustedX = cornerPoints.topLeftCorner.x * scaleX;
+        const adjustedY = cornerPoints.topLeftCorner.y * scaleY;
+        const adjustedWidth = (cornerPoints.topRightCorner.x - cornerPoints.topLeftCorner.x) * scaleX;
+        const adjustedHeight = (cornerPoints.bottomLeftCorner.y - cornerPoints.topLeftCorner.y) * scaleY;
 
-            const scaleX = imgWidth / displayWidth;
-            const scaleY = imgHeight / displayHeight;
+        // Crear canvas para recorte
+        const extractedCanvas = document.createElement('canvas');
+        extractedCanvas.width = adjustedWidth;
+        extractedCanvas.height = adjustedHeight;
+        const extractedCtx = extractedCanvas.getContext('2d');
+        extractedCtx.drawImage(
+            canvas, adjustedX, adjustedY, adjustedWidth, adjustedHeight,
+            0, 0, extractedCanvas.width, extractedCanvas.height
+        );
 
-            const adjustedX = cornerPoints.topLeftCorner.x * scaleX;
-            const adjustedY = cornerPoints.topLeftCorner.y * scaleY;
-            const adjustedWidth = (cornerPoints.topRightCorner.x - cornerPoints.topLeftCorner.x) * scaleX;
-            const adjustedHeight = (cornerPoints.bottomLeftCorner.y - cornerPoints.topLeftCorner.y) * scaleY;
-
-            const extractedCanvas = document.createElement('canvas');
-            extractedCanvas.width = adjustedWidth;
-            extractedCanvas.height = adjustedHeight;
-            const extractedCtx = extractedCanvas.getContext('2d');
-            extractedCtx.drawImage(
-                photoProcess,
-                adjustedX, adjustedY, adjustedWidth, adjustedHeight,
-                0, 0, extractedCanvas.width, extractedCanvas.height
-            );
-
-            let imgData = extractedCanvas.toDataURL('image/png');
-            photoResult.src = imgData
-            photoAuxResult.src = imgData
-            //decodeFun(extractedCanvas.toDataURL('image/png'))
-            decodeFun()
-
-        } catch (e) {
-            exist_photo.value = false
-            console.log('Error al recortar imagen:' + e);
-            //resultDecoded.innerHTML = "Esperando recorte" + e.message
-        }
-    }
+        let imgData = extractedCanvas.toDataURL('image/png');
+        photoResult.src = imgData;
+        //photoAuxResult.src = imgData;
+        //decodeFun();
+    };
 }
 
-// function decodeFun(b64) {
 function decodeFun() {
     // if (auxDecoded) {
     //     return
