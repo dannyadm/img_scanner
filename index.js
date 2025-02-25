@@ -4,7 +4,7 @@ var IMAGE_TYPES = JslibHtml5CameraPhoto.IMAGE_TYPES;
 const video = document.getElementById('video');
 const photoIni = document.getElementById('photoIni');
 const photoProcess = document.getElementById('photoProcess');
-const photoBorder = document.getElementById('photoBorder');
+// const photoBorder = document.getElementById('photoBorder');
 const photoResult = document.getElementById('photoResult');
 const photoAuxResult = document.getElementById('photoResultAux');
 const resultDecoded = document.getElementById('resultDecoded');
@@ -105,8 +105,8 @@ function cutImage() {
     photoProcess.onload = () => {
         try {
             //const scanner = new jscanify();
-            const highlightedCanvas = scanner.highlightPaper(photoProcess);
-            photoBorder.src = highlightedCanvas.toDataURL('image/png');
+            /*const highlightedCanvas = scanner.highlightPaper(photoProcess);
+            photoBorder.src = highlightedCanvas.toDataURL('image/png');*/
 
             const contour = scanner.findPaperContour(cv.imread(photoProcess));
             const cornerPoints = scanner.getCornerPoints(contour);
