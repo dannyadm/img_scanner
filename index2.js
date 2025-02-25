@@ -49,14 +49,6 @@ function stopCamera() {
 
 function takePhoto() {
     console.log("takePhoto")
-    // if (camara_activa.value == 'false' || exist_photo == 'true'){
-    //     console.log('Camara inactiva o ya se tomo foto');
-    //     return
-    // }
-    // if (auxDecoded) {
-    //     return
-    // }
-    //exist_photo.value = true
     var config = {
         sizeFactor: 1,
         imageType: IMAGE_TYPES.PNG,
@@ -72,10 +64,16 @@ function takePhoto() {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         let isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        let imageQuality = 1; // Calidad de la imagen entre 0 y 1 (ajústalo según sea necesario)
+        let imageQuality = 1;
         if (isMobile) {
             imageQuality = 0.8;
             console.log('Si es un mobileeeee');
+
+            if (photoIni.naturalWidth > 1080 || photoIni.naturalHeight > 1920) {
+                imgWidth = 1920
+                imgHeight = 1080
+            }
+
             canvas.width = imgHeight;
             canvas.height = imgWidth;
             ctx.imageSmoothingEnabled = true;
@@ -84,7 +82,7 @@ function takePhoto() {
             ctx.translate(0, canvas.height);
             ctx.rotate(Math.PI * 1.5);
             ctx.filter = 'grayscale(1)';
-            ctx.drawImage(photoIni, 0, 0, imgWidth, imgHeight);
+            ctx.drawImage(photoIni, 0, 0, imgWidth, imgHeight, 0, 0, canvas.width, canvas.height);
         } else {
             console.log('NO es un mobileeeee');
             canvas.width = photoIni.naturalWidth;
@@ -95,9 +93,7 @@ function takePhoto() {
             ctx.drawImage(photoIni, 0, 0, imgWidth, imgHeight);
         }
 
-        //photoProcess.src = canvas.toDataURL('image/png');
         photoProcess.src = canvas.toDataURL('image/webp', imageQuality);
-        //cutImage(canvas.toDataURL('image/png'))
         cutImage()
     }
 }
