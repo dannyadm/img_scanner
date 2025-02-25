@@ -46,8 +46,76 @@ function stopCamera() {
 }
 
 //setInterval(takePhoto, 300)
-
 function takePhoto() {
+    console.log("takePhoto");
+    var config = {
+        sizeFactor: 1,
+        imageType: IMAGE_TYPES.PNG,
+        imageCompression: 1
+    };
+    var dataUri = cameraPhoto.getDataUri(config);
+    console.log('Tipo de imagen de variable', typeof dataUri);
+    photoIni.src = dataUri;
+    
+    photoIni.onload = () => {
+        let imgWidth = photoIni.naturalWidth;
+        let imgHeight = photoIni.naturalHeight;
+        sizePhoto.textContent = imgWidth + "x" + imgHeight;
+
+        // Dimensiones deseadas
+        const maxWidth = 1920;
+        const maxHeight = 1080;
+
+        // Crear canvas con las dimensiones fijas
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Establecer el canvas al tamaño 1920x1080
+        canvas.width = maxWidth;
+        canvas.height = maxHeight;
+
+        // Ajustar la imagen al tamaño del canvas sin distorsionarla (manteniendo la relación de aspecto)
+        const scaleX = maxWidth / imgWidth;
+        const scaleY = maxHeight / imgHeight;
+        const scale = Math.min(scaleX, scaleY); // Escala uniforme para que quepa en el canvas
+
+        const offsetX = (maxWidth - imgWidth * scale) / 2; // Centrar la imagen horizontalmente
+        const offsetY = (maxHeight - imgHeight * scale) / 2; // Centrar la imagen verticalmente
+
+        let isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        let imageQuality = 1;
+
+        if (isMobile) {
+            imageQuality = 0.8;
+            console.log('Si es un móvil');
+
+            // Si es móvil, rotamos la imagen 90 grados (por ejemplo)
+            canvas.width = maxHeight;
+            canvas.height = maxWidth;
+
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = "high";
+            ctx.save();
+            ctx.translate(0, canvas.height);
+            ctx.rotate(Math.PI * 1.5); // Rotación de 90 grados
+            ctx.filter = 'grayscale(1)';
+            ctx.drawImage(photoIni, 0, 0, imgWidth, imgHeight, offsetX, offsetY, imgWidth * scale, imgHeight * scale);
+        } else {
+            console.log('NO es un móvil');
+            
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = "high";
+            ctx.filter = 'grayscale(1)';
+            ctx.drawImage(photoIni, 0, 0, imgWidth, imgHeight, offsetX, offsetY, imgWidth * scale, imgHeight * scale);
+        }
+
+        // Convertir la imagen a formato WebP con la calidad ajustada
+        photoProcess.src = canvas.toDataURL('image/webp', imageQuality);
+        cutImage();
+    };
+}
+
+/*function takePhoto() {
     console.log("takePhoto")
     var config = {
         sizeFactor: 1,
@@ -96,7 +164,7 @@ function takePhoto() {
         photoProcess.src = canvas.toDataURL('image/webp', imageQuality);
         cutImage()
     }
-}
+}*/
 
 //function cutImage(b64) {
 function cutImage() {
