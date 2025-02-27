@@ -259,7 +259,6 @@ document.addEventListener('DOMContentLoaded', function () {
     btnStartCamera.addEventListener('click', startCamera, false)
     btnCapture.addEventListener('click', tomarFoto, false)
     btnSalir.addEventListener('click', stopCamera, false)
-    btnAutomatico.addEventListener()
     btnAutomatico.addEventListener('click', () => {
         intervalAux = setInterval(tomarFoto,1000)
     });
