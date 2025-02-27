@@ -41,33 +41,26 @@ function startCamera() {
 function tomarFoto() {
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
-    
-    // Configurar el tamaño del canvas igual al del video
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-
-    // Dibujar la imagen del video en el canvas
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
     
-    // Usar las dimensiones del canvas directamente en lugar de naturalWidth y naturalHeight
     const imgWidth = canvas.width;
     const imgHeight = canvas.height;
-
-    // Procesar la imagen
     const processedCanvas = document.createElement('canvas');
     const ctx = processedCanvas.getContext('2d');
 
     let isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     if (isMobile) {
         console.log('Si es un mobileeeee');
-        processedCanvas.width = imgHeight; // Rotar la imagen en dispositivos móviles
+        processedCanvas.width = imgHeight;
         processedCanvas.height = imgWidth;
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = "high";
         ctx.save();
         ctx.translate(0, processedCanvas.height);
         ctx.rotate(Math.PI * 1.5);
-        ctx.filter = 'grayscale(1)'; // Aplicar filtro en escala de grises
+        ctx.filter = 'grayscale(1)';
         ctx.drawImage(canvas, 0, 0, imgWidth, imgHeight);
     } else {
         console.log('NO es un mobileeeee');
@@ -75,11 +68,61 @@ function tomarFoto() {
         processedCanvas.height = imgHeight;
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = "high";
-        ctx.filter = 'grayscale(1)'; // Aplicar filtro en escala de grises
+        ctx.filter = 'grayscale(1)';
         ctx.drawImage(canvas, 0, 0, imgWidth, imgHeight);
     }
     const finalImage = processedCanvas.toDataURL('image/png');
-    photoProcess.src = finalImage; // Esto asume que tienes un elemento <img> con id 'photoProcess'
+    photoProcess.src = finalImage;
+    recorteAut();
+}
+function recorteManual() {
+
+}
+
+function recorteAut() {
+    const scanner = new jscanify();
+    photoProcess.onload = () => {
+        try {
+
+            const contour = scanner.findPaperContour(cv.imread(photoProcess));
+            const cornerPoints = scanner.getCornerPoints(contour);
+            console.log('Coordenadas obtenidasss:', cornerPoints);
+
+            const imgWidth = photoProcess.naturalWidth;
+            const imgHeight = photoProcess.naturalHeight;
+            const displayWidth = photoProcess.width;
+            const displayHeight = photoProcess.height;
+
+            const scaleX = imgWidth / displayWidth;
+            const scaleY = imgHeight / displayHeight;
+
+            const adjustedX = cornerPoints.topLeftCorner.x * scaleX;
+            const adjustedY = cornerPoints.topLeftCorner.y * scaleY;
+            const adjustedWidth = (cornerPoints.topRightCorner.x - cornerPoints.topLeftCorner.x) * scaleX;
+            const adjustedHeight = (cornerPoints.bottomLeftCorner.y - cornerPoints.topLeftCorner.y) * scaleY;
+
+            const extractedCanvas = document.createElement('canvas');
+            extractedCanvas.width = adjustedWidth;
+            extractedCanvas.height = adjustedHeight;
+            const extractedCtx = extractedCanvas.getContext('2d');
+            extractedCtx.drawImage(
+                photoProcess,
+                adjustedX, adjustedY, adjustedWidth, adjustedHeight,
+                0, 0, extractedCanvas.width, extractedCanvas.height
+            );
+
+            let imgData = extractedCanvas.toDataURL('image/png');
+            photoResult.src = imgData
+            photoAuxResult.src = imgData
+            //decodeFun(extractedCanvas.toDataURL('image/png'))
+            //decodeFun()
+
+        } catch (e) {
+            exist_photo.value = false
+            console.log('Error al recortar imagen:' + e);
+            //resultDecoded.innerHTML = "Esperando recorte" + e.message
+        }
+    }
 }
 
 /*function tomarFoto() {
