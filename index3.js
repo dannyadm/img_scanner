@@ -7,6 +7,7 @@ const photoAuxResult = document.getElementById('photoResultAux');
 const resultDecoded = document.getElementById('resultDecoded');
 
 var btnStartCamera = document.getElementById('startCamera');
+var btnAutomatico = document.getElementById('btnAutomatico');
 var btnCapture = document.getElementById('capture');
 var btnSalir = document.getElementById('btnSalir');
 
@@ -19,6 +20,7 @@ let camara_activa = false
 let exist_photo = false
 let auxDecoded = false
 let stream
+let intervalAux
 
 //var cameraPhoto = new JslibHtml5CameraPhoto.default(video);
 
@@ -44,6 +46,7 @@ function startCamera() {
 
 function stopCamera() {
     if (stream) {
+        clearInterval(intervalAux)
         stream.getTracks().forEach(track => track.stop());
         video.srcObject = null;
         camara_activa = false
@@ -210,10 +213,11 @@ function decodeFun(imgb64) {
             console.log(`Comenzando decodificación para la imagen desde ${img.src}`);
             auxDecoded = true;
             let result = await codeReader.decodeFromImageElement(img);
-            camara_activa = false;
+            //camara_activa = false;
             let dataParser = parserResult(result.text);
             let jsonString = JSON.stringify(dataParser);
             resultDecoded.textContent = jsonString;
+            stopCamera()
                      
         } catch (ee) {
             auxDecoded = false;
@@ -255,4 +259,8 @@ document.addEventListener('DOMContentLoaded', function () {
     btnStartCamera.addEventListener('click', startCamera, false)
     btnCapture.addEventListener('click', tomarFoto, false)
     btnSalir.addEventListener('click', stopCamera, false)
+    btnAutomatico.addEventListener()
+    btnAutomatico.addEventListener('click', () => {
+        intervalAux = setInterval(tomarFoto,1000)
+    });
 });
