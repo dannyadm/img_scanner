@@ -150,7 +150,7 @@ function recorteAut() {
             photoResult.src = imgData
             //photoAuxResult.src = imgData
             //decodeFun(extractedCanvas.toDataURL('image/png'))
-            decodeFun()
+            decodeFun(imgData)
 
         } catch (e) {
             exist_photo = false
@@ -192,8 +192,8 @@ function decodeFun(imgb64) {
     resultDecoded.innerHTML = "Esperando decode crea imagen";
     console.log('Esperando que la imagen se cargue...');
 
-    //const imgRes = new Image();
-    const imgRes = document.createElement('img');  // Usamos document.createElement('img') para crear la imagen
+    const imgRes = new Image();
+    //const imgRes = document.createElement('img');
     imgRes.src = imgb64;
 
     const imageLoaded = new Promise((resolve, reject) => {
