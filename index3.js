@@ -148,7 +148,7 @@ function recorteAut() {
 
             let imgData = extractedCanvas.toDataURL('image/png');
             photoResult.src = imgData
-            photoAuxResult.src = imgData
+            //photoAuxResult.src = imgData
             //decodeFun(extractedCanvas.toDataURL('image/png'))
             decodeFun()
 
@@ -161,23 +161,22 @@ function recorteAut() {
     }
 }
 
-function decodeFun() {
+/*function decodeFun(imgb64) {
     const codeReader = new ZXing.BrowserPDF417Reader()
     resultDecoded.innerHTML = "Esperando decode crea imagen"
     console.log('Entro a decodificar valoressss');
-    photoAuxResult.onload = async () => {
-        //resultDecoded.innerHTML = "Esperando decode imagen cargada"
+    const imgRes = new Image();
+    imgRes.src = imgb64
+    imgRes.onload = async () => {
         try {
-            console.log(`Started decode for image from ${photoAuxResult.src}`)
+            console.log(`Started decode for image from ${imgRes.src}`)
             auxDecoded = true
-            let result = await codeReader.decodeFromImageElement(photoAuxResult)
+            let result = await codeReader.decodeFromImageElement(imgRes)
             
             camara_activa = false
-            //stopCamera()
             let dataParser = parserResult(result.text)
             let jsonString = JSON.stringify(dataParser)
             resultDecoded.textContent = jsonString
-            //clearInterval(intervalPhoto)
                      
         } catch (ee) {
             auxDecoded = false
@@ -186,7 +185,46 @@ function decodeFun() {
             resultDecoded.textContent = 'Errro decoded' + ee;
         }
     }
-};
+};*/
+
+function decodeFun(imgb64) {
+    const codeReader = new ZXing.BrowserPDF417Reader();
+    resultDecoded.innerHTML = "Esperando decode crea imagen";
+    console.log('Esperando que la imagen se cargue...');
+
+    const imgRes = new Image();
+    imgRes.src = imgb64;
+
+    // Creamos una promesa que se resuelve cuando la imagen esté completamente cargada
+    const imageLoaded = new Promise((resolve, reject) => {
+        imgRes.onload = () => resolve(imgRes);  // Resolvemos la promesa cuando la imagen se cargue
+        imgRes.onerror = (error) => reject('Error al cargar la imagen: ' + error);  // Rechazamos la promesa si ocurre un error
+    });
+
+    // Usamos async/await para esperar a que la imagen se cargue
+    imageLoaded.then(async (img) => {
+        try {
+            console.log(`Comenzando decodificación para la imagen desde ${img.src}`);
+            auxDecoded = true;
+            let result = await codeReader.decodeFromImageElement(img);
+            camara_activa = false;
+            let dataParser = parserResult(result.text);
+            let jsonString = JSON.stringify(dataParser);
+            resultDecoded.textContent = jsonString;
+                     
+        } catch (ee) {
+            auxDecoded = false;
+            exist_photo = false;
+            console.log("Error al decodificar", ee);
+            resultDecoded.textContent = 'Error al decodificar: ' + ee.message;
+        }
+    }).catch((error) => {
+        auxDecoded = false;
+        exist_photo = false;
+        console.error(error);
+        resultDecoded.textContent = error;
+    });
+}
 
 function parserResult(text) {
     console.log('Llego a crear objetooooo');
