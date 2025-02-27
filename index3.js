@@ -18,7 +18,7 @@ exist_photo.value = false
 let auxDecoded = false
 let mediaStream = null;
 
-const codeReader = new ZXing.BrowserPDF417Reader()
+
 
 //var cameraPhoto = new JslibHtml5CameraPhoto.default(video);
 
@@ -54,13 +54,13 @@ function stopCamera() {
 }
 
 function tomarFoto() {
-    if (camara_activa.value == 'false' || exist_photo.value == 'true') {
-        console.log('Camara inactiva o ya se tomo foto');
-        return
-    }
-    if (auxDecoded) {
-        return
-    }
+    // if (camara_activa.value == 'false' || exist_photo.value == 'true') {
+    //     console.log('Camara inactiva o ya se tomo foto');
+    //     return
+    // }
+    // if (auxDecoded) {
+    //     return
+    // }
     exist_photo.value = true
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
@@ -162,13 +162,14 @@ function recorteAut() {
 }
 
 function decodeFun() {
-    if (auxDecoded) {
-        return
-    }
+    // if (auxDecoded) {
+    //     return
+    // }
     
     //resultDecoded.innerHTML = "Esperando decode crea imagen"
     console.log('Entro a decodificar valoressss');
     photoAuxResult.onload = () => {
+        const codeReader = new ZXing.BrowserPDF417Reader()
         try {
             codeReader.decodeFromImage(photoAuxResult)
             .then(result => {
