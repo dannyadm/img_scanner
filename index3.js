@@ -10,11 +10,13 @@ var btnStartCamera = document.getElementById('startCamera');
 var btnCapture = document.getElementById('capture');
 var btnSalir = document.getElementById('btnSalir');
 
-const camara_activa = document.getElementById('camara_activa');
+/*const camara_activa = document.getElementById('camara_activa');
 camara_activa.value = false
 const exist_photo = document.getElementById('exist_photo');
-exist_photo.value = false
+exist_photo.value = false*/
 
+let camara_activa = false
+let exist_photo = false
 let auxDecoded = false
 let stream
 
@@ -32,9 +34,11 @@ function startCamera() {
     .then((userStream) => {
         stream = userStream;
         video.srcObject = stream;
+        camara_activa = true
     })
     .catch((err) => {
         console.log("Error al acceder a la cámara: ", err);
+        camara_activa = true
     });
 }
 
@@ -42,10 +46,20 @@ function stopCamera() {
     if (stream) {
         stream.getTracks().forEach(track => track.stop());
         video.srcObject = null;
+        camara_activa = false
+        exist_photo = false
+        auxDecoded = false
     }
 }
 
 function tomarFoto() {
+    if (camara_activa == false || exist_photo == true) {
+        return
+    }
+    if (auxDecoded) {
+        return
+    }
+    exist_photo = true
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
     canvas.width = video.videoWidth;
@@ -98,6 +112,9 @@ function recorteManual() {
 }
 
 function recorteAut() {
+    if (auxDecoded) {
+        return
+    }
     const scanner = new jscanify();
     photoProcess.onload = () => {
         try {
@@ -136,7 +153,8 @@ function recorteAut() {
             decodeFun()
 
         } catch (e) {
-            exist_photo.value = false
+            exist_photo = false
+            auxDecoded = false
             console.log('Error al recortar imagen:' + e);
             //resultDecoded.innerHTML = "Esperando recorte" + e.message
         }
@@ -151,9 +169,10 @@ function decodeFun() {
         //resultDecoded.innerHTML = "Esperando decode imagen cargada"
         try {
             console.log(`Started decode for image from ${photoAuxResult.src}`)
-            let result = await codeReader.decodeFromImageElement(photoAuxResult)
             auxDecoded = true
-            camara_activa.value = false
+            let result = await codeReader.decodeFromImageElement(photoAuxResult)
+            
+            camara_activa = false
             //stopCamera()
             let dataParser = parserResult(result.text)
             let jsonString = JSON.stringify(dataParser)
@@ -161,7 +180,8 @@ function decodeFun() {
             //clearInterval(intervalPhoto)
                      
         } catch (ee) {
-            exist_photo.value = false
+            auxDecoded = false
+            exist_photo = false
             console.log("Errro decoded", ee)
             resultDecoded.textContent = 'Errro decoded' + ee;
         }
