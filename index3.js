@@ -8,6 +8,7 @@ const resultDecoded = document.getElementById('resultDecoded');
 
 var btnStartCamera = document.getElementById('startCamera');
 var btnCapture = document.getElementById('capture');
+var btnSalir = document.getElementById('btnSalir');
 
 const camara_activa = document.getElementById('camara_activa');
 camara_activa.value = false
@@ -15,6 +16,7 @@ const exist_photo = document.getElementById('exist_photo');
 exist_photo.value = false
 
 let auxDecoded = false
+let stream
 
 //var cameraPhoto = new JslibHtml5CameraPhoto.default(video);
 
@@ -28,14 +30,19 @@ function startCamera() {
         }
     })
     .then((userStream) => {
-        // Asignar el flujo de video al elemento <video>
         stream = userStream;
         video.srcObject = stream;
-        //startButton.disabled = true;  // Deshabilitar el botón de activar cámara
     })
     .catch((err) => {
         console.log("Error al acceder a la cámara: ", err);
     });
+}
+
+function stopCamera() {
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        video.srcObject = null;
+    }
 }
 
 function tomarFoto() {
@@ -136,166 +143,7 @@ function recorteAut() {
     }
 }
 
-/*function tomarFoto() {
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    
-    // Configurar el tamaño del canvas igual al del video
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
-    // Dibujar la imagen del video en el canvas
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    
-    // Mostrar la imagen capturada en el <img>
-    photoIni.src = canvas.toDataURL('image/png');
-    photoIni.onload = () => {
-        let imgWidth = photoIni.naturalWidth;
-        let imgHeight = photoIni.naturalHeight;
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        let isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        if (isMobile) {
-            console.log('Si es un mobileeeee');
-            canvas.width = photoIni.naturalHeight;
-            canvas.height = photoIni.naturalWidth;
-            ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = "high";
-            ctx.save();
-            ctx.translate(0, canvas.height);
-            ctx.rotate(Math.PI * 1.5);
-            ctx.filter = 'grayscale(1)';
-            ctx.drawImage(photoIni, 0, 0, imgWidth, imgHeight);
-        } else {
-            console.log('NO es un mobileeeee');
-            canvas.width = photoIni.naturalWidth;
-            canvas.height = photoIni.naturalHeight;
-            ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = "high";
-            ctx.filter = 'grayscale(1)';
-            ctx.drawImage(photoIni, 0, 0, imgWidth, imgHeight);
-        }
-
-        photoProcess.src = canvas.toDataURL('image/png');
-        //cutImage(canvas.toDataURL('image/png'))
-        //cutImage()
-    }
-}*/
-
-
-//setInterval(takePhoto, 300)
-
-
-
-function takePhoto() {
-    console.log("takePhoto")
-    if (camara_activa.value == 'false' || exist_photo == 'true'){
-        console.log('Camara inactiva o ya se tomo foto');
-        return
-    }
-    if (auxDecoded) {
-        return
-    }
-    exist_photo.value = true
-    var config = {
-        sizeFactor: 1,
-        imageType: IMAGE_TYPES.PNG,
-        imageCompression: 1
-    };
-    var dataUri = cameraPhoto.getDataUri(config);
-    console.log('Tipo de image de variable', typeof dataUri);
-    photoIni.src = dataUri;
-    photoIni.onload = () => {
-        let imgWidth = photoIni.naturalWidth;
-        let imgHeight = photoIni.naturalHeight;
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        let isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        if (isMobile) {
-            console.log('Si es un mobileeeee');
-            canvas.width = photoIni.naturalHeight;
-            canvas.height = photoIni.naturalWidth;
-            ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = "high";
-            ctx.save();
-            ctx.translate(0, canvas.height);
-            ctx.rotate(Math.PI * 1.5);
-            ctx.filter = 'grayscale(1)';
-            ctx.drawImage(photoIni, 0, 0, imgWidth, imgHeight);
-        } else {
-            console.log('NO es un mobileeeee');
-            canvas.width = photoIni.naturalWidth;
-            canvas.height = photoIni.naturalHeight;
-            ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = "high";
-            ctx.filter = 'grayscale(1)';
-            ctx.drawImage(photoIni, 0, 0, imgWidth, imgHeight);
-        }
-
-        photoProcess.src = canvas.toDataURL('image/png');
-        //cutImage(canvas.toDataURL('image/png'))
-        cutImage()
-    }
-}
-
-//function cutImage(b64) {
-function cutImage() {
-    if (auxDecoded) {
-        return
-    }
-    const scanner = new jscanify();
-    photoProcess.onload = () => {
-        try {
-            //const scanner = new jscanify();
-            /*const highlightedCanvas = scanner.highlightPaper(photoProcess);
-            photoBorder.src = highlightedCanvas.toDataURL('image/png');*/
-
-            const contour = scanner.findPaperContour(cv.imread(photoProcess));
-            const cornerPoints = scanner.getCornerPoints(contour);
-            console.log('Coordenadas obtenidasss:', cornerPoints);
-
-            const imgWidth = photoProcess.naturalWidth;
-            const imgHeight = photoProcess.naturalHeight;
-            const displayWidth = photoProcess.width;
-            const displayHeight = photoProcess.height;
-
-            const scaleX = imgWidth / displayWidth;
-            const scaleY = imgHeight / displayHeight;
-
-            const adjustedX = cornerPoints.topLeftCorner.x * scaleX;
-            const adjustedY = cornerPoints.topLeftCorner.y * scaleY;
-            const adjustedWidth = (cornerPoints.topRightCorner.x - cornerPoints.topLeftCorner.x) * scaleX;
-            const adjustedHeight = (cornerPoints.bottomLeftCorner.y - cornerPoints.topLeftCorner.y) * scaleY;
-
-            const extractedCanvas = document.createElement('canvas');
-            extractedCanvas.width = adjustedWidth;
-            extractedCanvas.height = adjustedHeight;
-            const extractedCtx = extractedCanvas.getContext('2d');
-            extractedCtx.drawImage(
-                photoProcess,
-                adjustedX, adjustedY, adjustedWidth, adjustedHeight,
-                0, 0, extractedCanvas.width, extractedCanvas.height
-            );
-
-            let imgData = extractedCanvas.toDataURL('image/png');
-            photoResult.src = imgData
-            photoAuxResult.src = imgData
-            //decodeFun(extractedCanvas.toDataURL('image/png'))
-            decodeFun()
-
-        } catch (e) {
-            exist_photo.value = false
-            console.log('Error al recortar imagen:' + e);
-            //resultDecoded.innerHTML = "Esperando recorte" + e.message
-        }
-    }
-}
-
-// function decodeFun(b64) {
 function decodeFun() {
-    if (auxDecoded) {
-        return
-    }
     const codeReader = new ZXing.BrowserPDF417Reader()
     resultDecoded.innerHTML = "Esperando decode crea imagen"
     console.log('Entro a decodificar valoressss');
@@ -345,4 +193,5 @@ function cleanString(text) {
 document.addEventListener('DOMContentLoaded', function () {
     btnStartCamera.addEventListener('click', startCamera, false)
     btnCapture.addEventListener('click', tomarFoto, false)
+    btnSalir.addEventListener('click', stopCamera, false)
 });
