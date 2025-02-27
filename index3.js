@@ -76,7 +76,10 @@ function tomarFoto() {
     recorteAut();
 }
 function recorteManual() {
-
+    photoProcess.onload = () => {
+        let imgWidth = photoProcess.naturalWidth;
+        let imgHeight = photoProcess.naturalHeight;
+    }
 }
 
 function recorteAut() {
@@ -115,7 +118,7 @@ function recorteAut() {
             photoResult.src = imgData
             photoAuxResult.src = imgData
             //decodeFun(extractedCanvas.toDataURL('image/png'))
-            //decodeFun()
+            decodeFun()
 
         } catch (e) {
             exist_photo.value = false
