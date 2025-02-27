@@ -219,7 +219,7 @@ function decodeFun(imgb64) {
             auxDecoded = false;
             exist_photo = false;
             console.log("Error al decodificar", ee);
-            resultDecoded.textContent = 'Error al decodificar: ' + ee.message;
+            resultDecoded.textContent = 'Error al decodificar: ' + ee;
         }
     }).catch((error) => {
         auxDecoded = false;
