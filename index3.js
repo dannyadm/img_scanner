@@ -73,9 +73,10 @@ function tomarFoto() {
     }
     const finalImage = processedCanvas.toDataURL('image/png');
     photoProcess.src = finalImage;
-    recorteManual();
+    //recorteManual();
+    recorteAut()
 }
-function recorteAut() {
+function recorteManual() {
     photoProcess.onload = () => {
         const cutCanvas = document.createElement('canvas');
         const ctx = cutCanvas.getContext('2d');
