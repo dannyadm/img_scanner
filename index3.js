@@ -73,12 +73,20 @@ function tomarFoto() {
     }
     const finalImage = processedCanvas.toDataURL('image/png');
     photoProcess.src = finalImage;
-    recorteAut();
+    recorteManual();
 }
 function recorteManual() {
     photoProcess.onload = () => {
-        let imgWidth = photoProcess.naturalWidth;
-        let imgHeight = photoProcess.naturalHeight;
+        const cutCanvas = document.createElement('canvas');
+        const ctx = cutCanvas.getContext('2d');
+        //let imgWidth = photoProcess.naturalWidth;
+        //let imgHeight = photoProcess.naturalHeight;
+        let imgResWidth = 850;
+        let imgResHeight = 520;
+
+        ctx.drawImage(imgOriginal, 420, 50, imgResWidth, imgResHeight, 0, 0, imgResWidth, imgResHeight);
+        let imgData = cutCanvas.toDataURL('image/png');
+        photoResult.src = imgData
     }
 }
 
