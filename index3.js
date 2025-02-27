@@ -306,7 +306,7 @@ function decodeFun() {
             let result = await codeReader.decodeFromImageElement(photoAuxResult)
             auxDecoded = true
             camara_activa.value = false
-            stopCamera()
+            //stopCamera()
             let dataParser = parserResult(result.text)
             let jsonString = JSON.stringify(dataParser)
             resultDecoded.textContent = jsonString
