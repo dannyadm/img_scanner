@@ -195,10 +195,12 @@ function decodeFun(imgb64) {
     const imgRes = new Image();
     imgRes.src = imgb64;
 
-    // Creamos una promesa que se resuelve cuando la imagen esté completamente cargada
     const imageLoaded = new Promise((resolve, reject) => {
-        imgRes.onload = () => resolve(imgRes);  // Resolvemos la promesa cuando la imagen se cargue
-        imgRes.onerror = (error) => reject('Error al cargar la imagen: ' + error);  // Rechazamos la promesa si ocurre un error
+        imgRes.onload = () => resolve(imgRes);
+        imgRes.onerror = (error) => {
+            console.error('Error al cargar la imagen:', error);
+            reject('Error al cargar la imagen: ' + error);
+        };
     });
 
     // Usamos async/await para esperar a que la imagen se cargue
