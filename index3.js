@@ -22,8 +22,8 @@ function startCamera() {
     let isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     navigator.mediaDevices.getUserMedia({
         video: {
-            width: { ideal: 1280 },
-            height: { ideal: 720 },
+            width: { ideal: 1920, max: 1920},
+            height: { ideal: 1080, max: 1080},
             facingMode: isMobile ? { ideal: "environment" } : "user"
         }
     })
